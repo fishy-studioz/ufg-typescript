@@ -1,5 +1,5 @@
 import { KnitServer as Knit } from "@rbxts/knit";
-import { Players, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services";
+import { Chat, Players, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services";
 import WaitFor from "shared/Util/WaitFor";
 
 declare global {
@@ -38,7 +38,9 @@ const CommandService = Knit.CreateService({
     
     KnitStart(): void {
         const prefix = ".";
-        chatted.OnServerEvent.Connect((plr, text) => {
+        Chat.Chatted.Connect((p, text) => {
+            if (!(p && p.Parent && p.Parent.FindFirstChildOfClass("Humanoid"))) return;
+            const plr = Players.GetPlayerFromCharacter(p.Parent)!
             const msg = <string>text;
             const args = msg.split(" ");
             const cmdName = args[0].split(prefix)[1];
