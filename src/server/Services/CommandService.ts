@@ -39,17 +39,17 @@ const CommandService = Knit.CreateService({
     KnitStart(): void {
         Logger.ComponentActive(script.Name)
         const prefix = ".";
-        Chat.Chatted.Connect((p, text) => {
-            if (!(p && p.Parent && p.Parent.FindFirstChildOfClass("Humanoid"))) return;
-            const plr = Players.GetPlayerFromCharacter(p.Parent)!
-            const msg = <string>text;
-            const args = msg.split(" ");
-            const cmdName = args[0].split(prefix)[1];
-            args.shift();
-            
-            const cmd = this.FindCommand(cmdName);
-            cmd?.Run(plr, args);
-        });
+        Players.PlayerAdded.Connect(plr =>
+            plr.Chatted.Connect(text => {
+                const msg = <string>text;
+                const args = msg.split(" ");
+                const cmdName = args[0].split(prefix)[1];
+                args.shift();
+                
+                const cmd = this.FindCommand(cmdName);
+                cmd?.Run(plr, args);
+            })
+        );
     },
 
     FindCommand(cmdName: string): Command | undefined {

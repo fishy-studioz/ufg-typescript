@@ -1,5 +1,7 @@
 import { KnitServer as Knit } from "@rbxts/knit";
 import { Players } from "@rbxts/services";
+import { Character } from "shared/Classes/Character";
+import CharacterList from "server/Classes/CharacterList";
 import Logger from "shared/Logger";
 
 declare global {
@@ -17,8 +19,8 @@ const DataManager = Knit.CreateService({
         Players.PlayerAdded.Connect(plr => {
             data.Store<[number, number, number]>(plr, "location", [0, 0, 0]);
             data.Store<number>(plr, "xp", 0);
-            // data.Store<Character[]>(plr, "characterSetups", []);
-            data.Store<string[]>(plr, "partySetup", ["Traveler"]);
+            data.Store<Character[]>(plr, "characterSetups", []);
+            data.Store<string[]>(plr, "partySetup", ["Adventurer"]);
 
             const loc = data.Get<[number, number, number]>(plr, "location")
             let conn: RBXScriptConnection;

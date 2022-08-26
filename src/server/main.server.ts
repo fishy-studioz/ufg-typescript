@@ -7,5 +7,5 @@ const modules = (script.Parent!.FindFirstChild('Services') as Folder).GetDescend
             require(module);
 
 Knit.Start()
-    .then(() => Component.Auto(script.Parent!.FindFirstChild('Components') as Folder))
+    // .then(() => Component.Auto(script.Parent!.FindFirstChild('Components') as Folder))
     .catch(e => Logger.KnitError(e));
