@@ -1,5 +1,6 @@
 import { KnitServer as Knit } from "@rbxts/knit";
 import { Chat, Players, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services";
+import Logger from "shared/Logger";
 import WaitFor from "shared/Util/WaitFor";
 
 declare global {
@@ -20,7 +21,6 @@ class Command {
 }
 
 const net = WaitFor<Folder>(ReplicatedStorage, "Network")
-const chatted = WaitFor<RemoteEvent>(net, "MessageSent");
 const sendConsoleMsg = WaitFor<RemoteEvent>(net, "SendConsoleMsg");
 const reply = (plr: Player, msg: string) => sendConsoleMsg.FireClient(plr, msg);
 // const data = Knit.GetService("DataService");
@@ -37,6 +37,7 @@ const CommandService = Knit.CreateService({
     ]),
     
     KnitStart(): void {
+        Logger.ComponentActive(script.Name)
         const prefix = ".";
         Chat.Chatted.Connect((p, text) => {
             if (!(p && p.Parent && p.Parent.FindFirstChildOfClass("Humanoid"))) return;

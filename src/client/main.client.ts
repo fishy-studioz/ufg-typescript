@@ -6,7 +6,7 @@ for (const module of modules)
     if (module.IsA('ModuleScript'))
         require(module);
 
-Knit.Start()
-    .then(() => 
-        Component.Auto(script.Parent!.FindFirstChild('Components') as Folder))
-    .catch(e => Logger.KnitError(e));
+if (modules.size() !== 0)
+    Knit.Start()
+        .then(() => Component.Auto(script.Parent!.FindFirstChild('Components') as Folder))
+        .catch(e => Logger.KnitError(e));

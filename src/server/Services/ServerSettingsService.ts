@@ -1,4 +1,5 @@
 import { KnitServer as Knit } from "@rbxts/knit";
+import Logger from "shared/Logger";
 
 declare global {
     interface KnitServices {
@@ -8,9 +9,10 @@ declare global {
 
 const ServerSettingsService = Knit.CreateService({
     Name: "ServerSettingsService",
-    
-    Client: {
-    },
+
+    KnitStart(): void {
+        Logger.ComponentActive(script.Name)
+    }
 });
 
 export = ServerSettingsService;
