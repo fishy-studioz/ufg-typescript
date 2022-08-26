@@ -8,19 +8,19 @@
 		"$className": "DataModel",
 		"ServerScriptService": {
 			"$className": "ServerScriptService",
-			"TS": {
+			"TypeScript": {
 				"$path": "out/server"
 			}
 		},
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
-			"rbxts_include": {
+			"TypeScript_Include": {
 				"$path": "include",
 				"node_modules": {
 					"$path": "node_modules/@rbxts"
 				}
 			},
-			"TS": {
+			"TypeScript": {
 				"$path": "out/shared"
 			}
 		},
@@ -28,7 +28,7 @@
 			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
-				"TS": {
+				"TypeScript": {
 					"$path": "out/client"
 				}
 			}
