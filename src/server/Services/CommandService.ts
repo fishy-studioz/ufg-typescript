@@ -1,6 +1,5 @@
 import { KnitServer as Knit } from "@rbxts/knit";
-import { Players, ReplicatedStorage } from "@rbxts/services";
-import Logger from "shared/Logger";
+import { Players, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services";
 import WaitFor from "shared/Util/WaitFor";
 
 declare global {
@@ -20,36 +19,19 @@ class Command {
     }
 }
 
-const chatted = WaitFor<RemoteEvent>(ReplicatedStorage, "MessageSentRE");
-const sendConsoleMsg = WaitFor<BindableEvent>(ReplicatedStorage, "SendConsoleMsg");
-const reply = (msg: string) => sendConsoleMsg.Fire(msg);
-const data = Knit.GetService("DataService");
-const round = Knit.GetService("RoundService");
+const net = WaitFor<Folder>(ReplicatedStorage, "Network")
+const chatted = WaitFor<RemoteEvent>(net, "MessageSent");
+const sendConsoleMsg = WaitFor<RemoteEvent>(net, "SendConsoleMsg");
+const reply = (plr: Player, msg: string) => sendConsoleMsg.FireClient(plr, msg);
+// const data = Knit.GetService("DataService");
 const CommandService = Knit.CreateService({
     Name: "CommandService",
     Commands: new Map<string, Command>([
         [
-            "addgold", 
-            new Command(["addmoney", "addcoins"], (plr, [ amountStr, recipientName ]) => {
-                const amount = tonumber(amountStr);
-                if (!amountStr || !amount)
-                    return reply("Gold amount could not be parsed to number");
-
-                recipientName = recipientName ?? plr.Name;
-                const recipient = Players.GetPlayers().find(p => p.Name.find(recipientName)[0] ? true : false)!;
-                data.Increment(recipient, "gold", amount);
-                reply(`Successfully gave ${amount} gold to ${recipient.Name}`);
-            })
-        ],
-        [
-            "timerspeed", 
-            new Command(["settimerspeed", "countdownspeed"], (plr, [ scaleStr ]) => {
-                const scale = tonumber(scaleStr);
-                if (!scaleStr || !scale)
-                    return reply("Timer speed could not be parsed to a number");
-
-                round.SetTimerSpeed(scale);
-                reply(`Successfully set timer speeds to ${scale}x`);
+            "version", 
+            new Command(["ver", "vers", "v", "gameversion"], (plr) => {
+                const version = WaitFor<StringValue>(ReplicatedFirst, "GameVersion")
+                reply(plr, version.Value);
             })
         ]
     ]),

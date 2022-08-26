@@ -9,7 +9,7 @@ declare global {
     }
 }
 
-const keys = ["gold"];
+const keys = ["characterSetups", "partySetup", "location", "xp"];
 const DataService = Knit.CreateService({
     Name: "DataService",
 
@@ -50,7 +50,7 @@ const DataService = Knit.CreateService({
         this.Set(plr, name, value + amount);
     },
 
-    Store<V = unknown>(plr: Player, name: string, defaultValue: V): DataStore2<V> {
+    Store<V extends defined = defined>(plr: Player, name: string, defaultValue: V): DataStore2<V> {
         const store = DataStore2<V>(name, plr);
         const signal = this.Client.DataUpdated;
         const callRemote = (value: V) => signal.Fire(plr, name, value);
