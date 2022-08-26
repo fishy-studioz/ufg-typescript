@@ -18,8 +18,9 @@ const DataManager = Knit.CreateService({
         const data = Knit.GetService("DataService");
         Players.PlayerAdded.Connect(plr => {
             data.Store<[number, number, number]>(plr, "location", [0, 0, 0]);
-            data.Store<number>(plr, "xp", 0);
-            data.Store<Character[]>(plr, "characterSetups", []);
+            data.Store<number>(plr, "adventureXP", 0);
+            data.Store<number>(plr, "equippedCharacter", 1);
+            data.Store<Character[]>(plr, "characterSetups", [CharacterList[0]]);
             data.Store<string[]>(plr, "partySetup", ["Adventurer"]);
 
             const loc = data.Get<[number, number, number]>(plr, "location")
