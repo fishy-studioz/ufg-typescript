@@ -1,5 +1,6 @@
 import { KnitServer as Knit } from "@rbxts/knit";
 import { Players } from "@rbxts/services";
+import { Character } from "shared/Classes/Character";
 
 declare global {
     interface KnitServices {
@@ -9,10 +10,6 @@ declare global {
 
 const HealthService = Knit.CreateService({
     Name: "HealthService",
-
-    Client: {
-        
-    },
 
     KnitStart() {
         let firstTime = true;
@@ -29,7 +26,8 @@ const HealthService = Knit.CreateService({
                                 firstTime = false;
                             }
                             const partySetup = <string[]>data.Get(plr, "partySetup");
-                            const char = chars.GetData(partySetup[<number>equippedChar - 1])!;
+                            const charName = partySetup[<number>equippedChar - 1];
+                            const char = chars.GetData(charName)!;
                             const hum = plrChar?.FindFirstChildOfClass("Humanoid")!;
                             hum.MaxHealth = char.State.Stats.MaxHealth;
                             hum.Health = char.State.Stats.Health;
