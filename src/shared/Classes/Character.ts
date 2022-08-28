@@ -57,14 +57,19 @@ export interface CharacterState {
 }
 
 export interface CharacterAbilities {
-    Skill: {
+    readonly Skill: {
         Name: string;
         Icon: string;
     };
-    Burst: {
+    readonly Burst: {
         Name: string;
         Icon: string;
     }
+}
+
+export interface CharacterImages {
+    readonly Profile: number;
+    readonly Bust: number;
 }
 
 export class Character {
@@ -75,6 +80,7 @@ export class Character {
         public readonly Rarity: Stars,
         public readonly Wishable: boolean,
         public readonly Abilities: CharacterAbilities,
+        public readonly Images: CharacterImages,
         public State: CharacterState
     ) {}
 }

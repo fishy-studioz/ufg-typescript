@@ -16,6 +16,10 @@ export = new Character(
             Icon: ""
         },
     },
+    {
+        Profile: 123456,
+        Bust: 123456
+    },
     { //default state
         Stats: new CharacterStats(1200, 100, 20), //base health, attack, and resist
         Equipped: {
