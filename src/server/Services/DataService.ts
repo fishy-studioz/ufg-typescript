@@ -9,7 +9,7 @@ declare global {
     }
 }
 
-const keys = ["characterSetups", "partySetup", "location", "adventureXP", "equippedCharacter"];
+const keys = ["characterSetups", "partySetup", "location", "adventureXP", "equippedCharacter", "nickname", "newPlayer"];
 const DataService = Knit.CreateService({
     Name: "DataService",
 

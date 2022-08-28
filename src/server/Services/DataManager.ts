@@ -22,6 +22,8 @@ const DataManager = Knit.CreateService({
             data.Store<number>(plr, "equippedCharacter", 1);
             data.Store<Character[]>(plr, "characterSetups", [CharacterList[0]]);
             data.Store<string[]>(plr, "partySetup", ["Adventurer"]);
+            data.Store<boolean>(plr, "newPlayer", true);
+            data.Store<string>(plr, "nickname", "Adventurer");
 
             const loc = data.Get<[number, number, number]>(plr, "location")
             let conn: RBXScriptConnection;
