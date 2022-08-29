@@ -11,6 +11,7 @@ declare global {
 
 class Command {
     public constructor(
+        public readonly Name: string,
         public readonly Aliases: string[],
         private readonly callback: (plr: Player, args: string[]) => void
     ) {}
@@ -29,7 +30,7 @@ const CommandService = Knit.CreateService({
     Commands: new Map<string, Command>([
         [
             "version", 
-            new Command(["ver", "vers", "v", "gameversion"], (plr) => {
+            new Command("version", ["ver", "vers", "v", "gameversion"], (plr) => {
                 const version = WaitFor<StringValue>(ReplicatedFirst, "GameVersion")
                 reply(plr, version.Value);
             })
@@ -37,7 +38,8 @@ const CommandService = Knit.CreateService({
     ]),
     
     KnitStart(): void {
-        Logger.ComponentActive(script.Name)
+        Logger.ComponentActive(script.Name);
+        const discord = Knit.GetService("DiscordLogService");
         const prefix = ".";
         Players.PlayerAdded.Connect(plr =>
             plr.Chatted.Connect(text => {
@@ -47,7 +49,10 @@ const CommandService = Knit.CreateService({
                 args.shift();
                 
                 const cmd = this.FindCommand(cmdName);
-                cmd?.Run(plr, args);
+                if (cmd) {
+                    discord.Log(plr, "Running command: " + cmd.Name, "Command Executed");
+                    cmd.Run(plr, args);
+                }
             })
         );
     },

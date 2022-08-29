@@ -1,9 +1,11 @@
 import { RunService } from "@rbxts/services";
 
 export default class Logger {
-    private static Log(source: string, msg: unknown, fatal = false): void {
+    private static Log(source: string, msg: unknown, fatal = false, warning = false): void {
         if (fatal)
             throw error(`[${source}]:   ➤ ${msg}`);
+        else if (warning)
+            warn(`[${source}]:   ➤ ${msg}`);
         else
             print(`[${source}]:   ➤ ${msg}`);
     }
@@ -19,6 +21,10 @@ export default class Logger {
 
     public static UnhandledCase(msg: unknown): void {
         this.Log("Unhandled Case", msg, true);
+    }
+
+    public static HttpError(msg: unknown): void {
+        this.Log(`HTTP Error`, msg, false, true);
     }
 
     public static UtilError(methodName: string, msg: unknown): void {

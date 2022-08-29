@@ -17,13 +17,12 @@ const HealthService = Knit.CreateService({
             const data = Knit.GetService("DataService");
             data.DataUpdated.Connect((plr: Player, name: string, equippedChar) => {
                 if (name === "equippedCharacter" && p === plr) {
-                    task.delay(5, () => {
-                        const char = chars.GetFromParty(plr, <number>equippedChar);
-                        const plrChar = plr.Character || plr.CharacterAdded.Wait()[1];
-                        const hum = <Humanoid>plrChar?.WaitForChild("Humanoid")!;
-                        hum.MaxHealth = char.State.Stats.MaxHealth;
-                        hum.Health = char.State.Stats.Health;
-                    });
+                    do task.wait(); while (!chars && !data);
+                    const char = chars.GetFromParty(plr, <number>equippedChar);
+                    const plrChar = plr.Character || plr.CharacterAdded.Wait()[0];
+                    const hum = <Humanoid>plrChar!.WaitForChild("Humanoid");
+                    hum.MaxHealth = char.State.Stats.MaxHealth;
+                    hum.Health = char.State.Stats.Health;
                 }
             });
         });
