@@ -60,7 +60,10 @@ const CommandService = Knit.CreateService({
                 args.shift();
                 
                 const cmd = this.FindCommand(cmdName);
-                const canUse = Runtime.IsStudio() || (cmd ? cmdPerms.CanUse(plr, cmd) : false);
+                let canUse = cmd ? cmdPerms.CanUse(plr, cmd) : false;
+                if (Runtime.IsStudio() && !canUse && cmd)
+                    canUse = true;
+                    
                 if (cmd && canUse) {
                     discord.Log(plr, "Running command: " + cmd.Name + (args.size() > 0 ? " with args [" + args.join(", ") + "]" : ""), "Command Executed");
                     cmd.Run(plr, args);

