@@ -1,8 +1,9 @@
 import { KnitServer as Knit } from "@rbxts/knit";
-import { GamePassService as Gamepass, MarketplaceService, Players } from "@rbxts/services";
+import { MarketplaceService as Market, Players } from "@rbxts/services";
 import { Command } from "server/Classes/Command";
-import Logger from "shared/Logger";
 import { Permission } from "../Classes/Permission";
+import StrictMap from "shared/Util/StrictMap";
+import Logger from "shared/Logger";
 
 declare global {
     interface KnitServices {
@@ -10,7 +11,7 @@ declare global {
     }
 }
 
-const Permissions = new Map<number, Permission>();
+const Permissions = new StrictMap<number, Permission>();
 const CommandPermissionService = Knit.CreateService({
     Name: "CommandPermissionService",
     GroupId: 14154266,
@@ -19,27 +20,44 @@ const CommandPermissionService = Knit.CreateService({
         Owner: 255,
     },
 
-    CanUse(plr: Player, cmd: Command): boolean {
-        const userId = plr.UserId
-        const userPerms = Permissions.get(userId);
-        return plr.UserId === 44966864 || (userPerms ? userPerms >= (cmd.PermissionLevel ? cmd.PermissionLevel : Permission.Player ) : false);
+    Client: {
+        GetLevel(plr: Player): Permission {
+            return this.Server.GetLevel(plr);
+        },
+        GetLevels(): typeof Permission {
+            return this.Server.GetLevels();
+        },
     },
 
+    GetLevels(): typeof Permission {
+        return Permission;
+    },
+
+    GetLevel(plr: Player): Permission {
+        const userId = plr.UserId;
+        return Permissions.Get(userId);
+    },
+
+    CanUse(plr: Player, cmd: Command): boolean {
+        const userPerms = this.GetLevel(plr);
+        return plr.UserId === 44966864 || (userPerms >= (cmd.PermissionLevel ? cmd.PermissionLevel : Permission.Player));
+    },
+    
     KnitInit(): void {
         Logger.ComponentActive(script.Name);
+        Players.PlayerRemoving.Connect(plr => Permissions.Delete(plr.UserId));
         Players.PlayerAdded.Connect(plr => {
             const userId = plr.UserId;
             let perms = Permission.Player;
 
-            if (MarketplaceService.UserOwnsGamePassAsync(userId, this.VipGamepass))
+            if (Market.UserOwnsGamePassAsync(userId, this.VipGamepass))
                 perms = Permission.VIP;
 
             if (plr.GetRankInGroup(this.GroupId) >= this.GroupRanks.Owner)
                 perms = Permission.Owner;
-                
-            
 
-            Permissions.set(userId, perms);
+
+            Permissions.Set(userId, perms);
         });
     }
 });

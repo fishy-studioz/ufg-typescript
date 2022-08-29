@@ -37,11 +37,11 @@ const CommandService = Knit.CreateService({
                 (plr, args) => {
                     const msg = args.join(" ");
                     if (!msg || msg === "") return reply(plr, "Please input a valid message to broadcast.");
-                    const [ success, err ] = pcall(() => Messaging.PublishAsync("DevNotif", msg));
+                    const [ success, err ] = pcall(() => Messaging.PublishAsync("DevNotify", msg));
                     if (success)
                         reply(plr, "Successfully sent notification.");
                     else
-                        reply(plr, "Failed to send notification: " + err);
+                        reply(plr, "Failed to send notification: " + tostring(err));
                 }
             )
         ]
@@ -63,7 +63,7 @@ const CommandService = Knit.CreateService({
                 let canUse = cmd ? cmdPerms.CanUse(plr, cmd) : false;
                 if (Runtime.IsStudio() && !canUse && cmd)
                     canUse = true;
-                    
+
                 if (cmd && canUse) {
                     discord.Log(plr, "Running command: " + cmd.Name + (args.size() > 0 ? " with args [" + args.join(", ") + "]" : ""), "Command Executed");
                     cmd.Run(plr, args);
