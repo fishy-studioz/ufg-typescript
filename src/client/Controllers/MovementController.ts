@@ -51,6 +51,7 @@ const MovementController = Knit.CreateController({
                 
                 // const track = hum.LoadAnimation(dashAnim);
                 // track.Play();
+                break;
             }
             default: Logger.UnhandledCase("Attempt to set invalid movement mode: " + movementMode);
         }
