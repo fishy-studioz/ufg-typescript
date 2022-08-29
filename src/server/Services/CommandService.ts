@@ -1,5 +1,5 @@
 import { KnitServer as Knit } from "@rbxts/knit";
-import { Chat, Players, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services";
+import { Chat, MessagingService, Players, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services";
 import Logger from "shared/Logger";
 import WaitFor from "shared/Util/WaitFor";
 
@@ -33,6 +33,17 @@ const CommandService = Knit.CreateService({
             new Command("version", ["ver", "vers", "v", "gameversion"], (plr) => {
                 const version = WaitFor<StringValue>(ReplicatedFirst, "GameVersion")
                 reply(plr, version.Value);
+            })
+        ],
+        [
+            "notify",
+            new Command("notify", ["announce", "broadcast", "notif"], (plr, [ msg ]) => {
+                if (!msg || msg === "") return reply(plr, "Please input a valid message to broadcast.");
+                const [ success, err ] = pcall(() => MessagingService.PublishAsync("DevNotif", msg));;
+                if (success)
+                    reply(plr, "Successfully sent notification.");
+                else
+                    reply(plr, "Failed to send notification: " + err)
             })
         ]
     ]),

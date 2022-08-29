@@ -56,20 +56,35 @@ export interface CharacterState {
     };
 }
 
-export interface CharacterAbilities {
-    readonly Skill: {
-        Name: string;
-        Icon: string;
-    };
-    readonly Burst: {
-        Name: string;
-        Icon: string;
-    }
-}
-
 export interface CharacterImages {
     readonly Profile: number;
     readonly Bust: number;
+    readonly Skill: number;
+    readonly Burst: number;
+}
+
+export interface CharacterAbilityInfo {
+    readonly Burst: {
+        readonly Name: string;
+        readonly Cooldown: number;
+        readonly BaseDamage: number;
+    };
+    readonly Skill: {
+        readonly Name: string;
+        readonly Cooldown: number;
+        readonly BaseDamage: number;
+    };
+}
+
+export interface AbilityMultipliers { 
+    Damage: number;
+    Cooldown: number;
+}
+
+export enum Gender {
+    Male,
+    Female,
+    Other
 }
 
 export class Character {
@@ -78,9 +93,18 @@ export class Character {
         public readonly WeaponType: WeaponType,
         public readonly Element: Element,
         public readonly Rarity: Stars,
+        public readonly Gender: Gender,
         public readonly Wishable: boolean,
-        public readonly Abilities: CharacterAbilities,
         public readonly Images: CharacterImages,
+        public readonly AbilityInfo: CharacterAbilityInfo,
+        
         public State: CharacterState
-    ) {}
+    ) {
+        this.AbilityMultipliers = {
+            Damage: 1,
+            Cooldown: 1
+        }
+    }
+
+    public AbilityMultipliers: AbilityMultipliers
 }
