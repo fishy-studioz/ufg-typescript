@@ -1,5 +1,5 @@
 import { KnitServer as Knit } from "@rbxts/knit";
-import { MessagingService as Messaging, Players, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services";
+import { MessagingService as Messaging, Players, ReplicatedFirst, ReplicatedStorage, RunService as Runtime } from "@rbxts/services";
 import { Command } from "../Classes/Command";
 import Logger from "shared/Logger";
 import WaitFor from "shared/Util/WaitFor";
@@ -34,7 +34,8 @@ const CommandService = Knit.CreateService({
             new Command("notify", 
                 Permission.Developer,
                 ["announce", "broadcast", "notif"], 
-                (plr, [ msg ]) => {
+                (plr, args) => {
+                    const msg = args.join(" ");
                     if (!msg || msg === "") return reply(plr, "Please input a valid message to broadcast.");
                     const [ success, err ] = pcall(() => Messaging.PublishAsync("DevNotif", msg));
                     if (success)
@@ -59,7 +60,7 @@ const CommandService = Knit.CreateService({
                 args.shift();
                 
                 const cmd = this.FindCommand(cmdName);
-                const canUse = cmd ? cmdPerms.CanUse(plr, cmd) : false;
+                const canUse = Runtime.IsStudio() || (cmd ? cmdPerms.CanUse(plr, cmd) : false);
                 if (cmd && canUse) {
                     discord.Log(plr, "Running command: " + cmd.Name, "Command Executed");
                     cmd.Run(plr, args);
