@@ -14,6 +14,16 @@ const InputController = Knit.CreateController({
     InputBeganCallbacks: new Map<Enum.KeyCode | Enum.UserInputType, Callback[]>(),
     InputEndedCallbacks: new Map<Enum.KeyCode | Enum.UserInputType, Callback[]>(),
 
+    MiceDown(inputTypes: Enum.UserInputType[], callback: Callback): void {
+        for (const inputType of inputTypes)
+            this.MouseDown(inputType, callback);
+    },
+
+    MiceUp(inputTypes: Enum.UserInputType[], callback: Callback): void {
+        for (const inputType of inputTypes)
+            this.MouseUp(inputType, callback);
+    },
+
     MouseUp(inputType: Enum.UserInputType, callback: Callback): void {
         let callbacks = this.InputBeganCallbacks.get(inputType);
         if (!callbacks) {
@@ -34,6 +44,16 @@ const InputController = Knit.CreateController({
 
         callbacks.push(callback);
         this.InputBeganCallbacks.set(inputType, callbacks);
+    },
+
+    KeysDown(keys: Enum.KeyCode[], callback: Callback): void {
+        for (const key of keys)
+            this.KeyDown(key, callback);
+    },
+
+    KeysUp(keys: Enum.KeyCode[], callback: Callback): void {
+        for (const key of keys)
+            this.KeyUp(key, callback);
     },
 
     KeyDown(key: Enum.KeyCode, callback: Callback): void {
