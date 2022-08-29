@@ -8,6 +8,8 @@ declare global {
     }
 }
 
+type DisconnectCallback = () => void
+
 const { UserInputType: InputType } = Enum;
 const InputController = Knit.CreateController({
     Name: "InputController",
@@ -25,26 +27,40 @@ const InputController = Knit.CreateController({
             this.MouseUp(inputType, callback);
     },
 
-    MouseUp(inputType: Enum.UserInputType, callback: Callback): void {
-        let callbacks = this.InputBeganCallbacks.get(inputType);
+    MouseUp(itype: Enum.UserInputType, callback: Callback): DisconnectCallback {
+        const endedCallbacks = this.InputEndedCallbacks;
+        let callbacks = endedCallbacks.get(itype);
         if (!callbacks) {
-            this.InputBeganCallbacks.set(inputType, []);
+            endedCallbacks.set(itype, []);
             callbacks = [];
         }
 
         callbacks.push(callback);
-        this.InputBeganCallbacks.set(inputType, callbacks);
+        endedCallbacks.set(itype, callbacks);
+
+        return function(): void {
+            const callbacks = endedCallbacks.get(itype)!;
+            callbacks.remove(callbacks.indexOf(callback));
+            endedCallbacks.set(itype, callbacks);
+        }
     },
 
-    MouseDown(inputType: Enum.UserInputType, callback: Callback): void {
-        let callbacks = this.InputBeganCallbacks.get(inputType);
+    MouseDown(itype: Enum.UserInputType, callback: Callback): DisconnectCallback {
+        const beganCallbacks = this.InputBeganCallbacks;
+        let callbacks = beganCallbacks.get(itype);
         if (!callbacks) {
-            this.InputBeganCallbacks.set(inputType, []);
+            beganCallbacks.set(itype, []);
             callbacks = [];
         }
 
         callbacks.push(callback);
-        this.InputBeganCallbacks.set(inputType, callbacks);
+        beganCallbacks.set(itype, callbacks);
+
+        return function(): void {
+            const callbacks = beganCallbacks.get(itype)!;
+            callbacks.remove(callbacks.indexOf(callback));
+            beganCallbacks.set(itype, callbacks);
+        }
     },
 
     KeysDown(keys: Enum.KeyCode[], callback: Callback): void {
@@ -57,26 +73,40 @@ const InputController = Knit.CreateController({
             this.KeyUp(key, callback);
     },
 
-    KeyDown(key: Enum.KeyCode, callback: Callback): void {
-        let callbacks = this.InputBeganCallbacks.get(key);
+    KeyDown(key: Enum.KeyCode, callback: Callback): DisconnectCallback {
+        const beganCallbacks = this.InputBeganCallbacks;
+        let callbacks = beganCallbacks.get(key);
         if (!callbacks) {
-            this.InputBeganCallbacks.set(key, []);
-            callbacks = [];
-        }
-
-        callbacks.push(callback);
-        this.InputBeganCallbacks.set(key, callbacks);
-    },
-
-     KeyUp(key: Enum.KeyCode, callback: Callback): void {
-        let callbacks = this.InputEndedCallbacks.get(key);
-        if (!callbacks) {
-            this.InputEndedCallbacks.set(key, []);
+            beganCallbacks.set(key, []);
             callbacks = [];
         }
         
         callbacks.push(callback);
-        this.InputEndedCallbacks.set(key, callbacks);
+        beganCallbacks.set(key, callbacks);
+        
+        return function(): void {
+            const callbacks = beganCallbacks.get(key)!;
+            callbacks.remove(callbacks.indexOf(callback));
+            beganCallbacks.set(key, callbacks);
+        }
+    },
+
+     KeyUp(key: Enum.KeyCode, callback: Callback): DisconnectCallback {
+        const endedCallbacks = this.InputEndedCallbacks;
+        let callbacks = endedCallbacks.get(key);
+        if (!callbacks) {
+            endedCallbacks.set(key, []);
+            callbacks = [];
+        }
+        
+        callbacks.push(callback);
+        endedCallbacks.set(key, callbacks);
+
+        return function(): void {
+            const callbacks = endedCallbacks.get(key)!;
+            callbacks.remove(callbacks.indexOf(callback));
+            endedCallbacks.set(key, callbacks);
+        }
     },
 
     KnitInit(): void {

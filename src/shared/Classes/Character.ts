@@ -79,6 +79,7 @@ export interface CharacterAbilityInfo {
 export interface AbilityMultipliers { 
     Damage: number;
     Cooldown: number;
+    AttackSpeed: number;
 }
 
 export enum Gender {
@@ -102,7 +103,8 @@ export class Character {
     ) {
         this.AbilityMultipliers = {
             Damage: 1,
-            Cooldown: 1
+            Cooldown: 1,
+            AttackSpeed: 1
         }
     }
 

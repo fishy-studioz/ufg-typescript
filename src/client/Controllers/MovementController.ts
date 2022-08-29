@@ -45,7 +45,7 @@ const MovementController = Knit.CreateController({
                 const velocity = new Instance("BodyVelocity");
                 velocity.MaxForce = new Vector3(20000, 20000, 20000);
                 velocity.P = 1550;
-                velocity.Velocity = root.CFrame.LookVector.mul(35).sub(new Vector3(0, getModelMass(char) * World.Gravity * .012, 0));
+                velocity.Velocity = root.CFrame.LookVector.mul(35).sub(new Vector3(0, getModelMass(char) * World.Gravity * .0105, 0));
                 velocity.Parent = root;
                 Debris.AddItem(velocity, .35);
                 
