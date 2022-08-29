@@ -1,23 +1,13 @@
 import { KnitServer as Knit } from "@rbxts/knit";
-import { Chat, MessagingService, Players, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services";
+import { MessagingService as Messaging, Players, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services";
+import { Command } from "../Classes/Command";
 import Logger from "shared/Logger";
 import WaitFor from "shared/Util/WaitFor";
+import { Permission } from "server/Classes/Permission";
 
 declare global {
     interface KnitServices {
         CommandService: typeof CommandService;
-    }
-}
-
-class Command {
-    public constructor(
-        public readonly Name: string,
-        public readonly Aliases: string[],
-        private readonly callback: (plr: Player, args: string[]) => void
-    ) {}
-
-    public Run(plr: Player, args: string[]): void {
-        this.callback(plr, args);
     }
 }
 
@@ -30,27 +20,36 @@ const CommandService = Knit.CreateService({
     Commands: new Map<string, Command>([
         [
             "version", 
-            new Command("version", ["ver", "vers", "v", "gameversion"], (plr) => {
-                const version = WaitFor<StringValue>(ReplicatedFirst, "GameVersion")
-                reply(plr, version.Value);
-            })
+            new Command("version", 
+                Permission.Player,
+                ["ver", "vers", "v", "gameversion"], 
+                (plr) => {
+                    const version = WaitFor<StringValue>(ReplicatedFirst, "GameVersion")
+                    reply(plr, version.Value);
+                }
+            )
         ],
         [
             "notify",
-            new Command("notify", ["announce", "broadcast", "notif"], (plr, [ msg ]) => {
-                if (!msg || msg === "") return reply(plr, "Please input a valid message to broadcast.");
-                const [ success, err ] = pcall(() => MessagingService.PublishAsync("DevNotif", msg));;
-                if (success)
-                    reply(plr, "Successfully sent notification.");
-                else
-                    reply(plr, "Failed to send notification: " + err)
-            })
+            new Command("notify", 
+                Permission.Developer,
+                ["announce", "broadcast", "notif"], 
+                (plr, [ msg ]) => {
+                    if (!msg || msg === "") return reply(plr, "Please input a valid message to broadcast.");
+                    const [ success, err ] = pcall(() => Messaging.PublishAsync("DevNotif", msg));
+                    if (success)
+                        reply(plr, "Successfully sent notification.");
+                    else
+                        reply(plr, "Failed to send notification: " + err);
+                }
+            )
         ]
     ]),
     
     KnitStart(): void {
         Logger.ComponentActive(script.Name);
         const discord = Knit.GetService("DiscordLogService");
+        const cmdPerms = Knit.GetService("CommandPermissionService");
         const prefix = ".";
         Players.PlayerAdded.Connect(plr =>
             plr.Chatted.Connect(text => {
@@ -60,7 +59,8 @@ const CommandService = Knit.CreateService({
                 args.shift();
                 
                 const cmd = this.FindCommand(cmdName);
-                if (cmd) {
+                const canUse = cmd ? cmdPerms.CanUse(plr, cmd) : false;
+                if (cmd && canUse) {
                     discord.Log(plr, "Running command: " + cmd.Name, "Command Executed");
                     cmd.Run(plr, args);
                 }

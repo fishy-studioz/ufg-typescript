@@ -17,6 +17,7 @@ const DataManager = Knit.CreateService({
         Logger.ComponentActive(this.Name);
         const data = Knit.GetService("DataService");
         Players.PlayerAdded.Connect(plr => {
+            task.wait(3.2);
             data.Store<[number, number, number]>(plr, "location", [0, 0, 0]);
             data.Store<number>(plr, "adventureXP", 0);
             data.Store<number>(plr, "equippedCharacter", 1);
