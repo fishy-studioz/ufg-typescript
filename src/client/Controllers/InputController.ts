@@ -1,5 +1,6 @@
 import { KnitClient as Knit } from "@rbxts/knit";
 import { UserInputService as UIS } from "@rbxts/services";
+import Logger from "shared/Logger";
 
 declare global {
     interface KnitControllers {
@@ -79,6 +80,7 @@ const InputController = Knit.CreateController({
     },
 
     KnitInit(): void {
+        Logger.ComponentActive(script.Name);
         UIS.InputBegan.Connect(({ UserInputType: itype, KeyCode: key }, processed) => {
             if (processed) return;
             if (itype === InputType.MouseButton1)
