@@ -18,6 +18,7 @@ const CommandPermissionService = Knit.CreateService({
     VipGamepass: 79821495,
     GroupRanks: {
         Owner: 255,
+        Developer: 254
     },
 
     Client: {
@@ -45,20 +46,24 @@ const CommandPermissionService = Knit.CreateService({
     
     KnitInit(): void {
         Logger.ComponentActive(script.Name);
-        Players.PlayerRemoving.Connect(plr => Permissions.Delete(plr.UserId));
         Players.PlayerAdded.Connect(plr => {
+            const setP = (id: number, p: Permission) => Permissions.Set(id, p);
+
             const userId = plr.UserId;
             let perms = Permission.Player;
-
+            setP(userId, perms);
+            
             if (Market.UserOwnsGamePassAsync(userId, this.VipGamepass))
-                perms = Permission.VIP;
+                perms = Permission.VIP; setP(userId, perms);
+            
+            const gRank = plr.GetRankInGroup(this.GroupId);
+            if (gRank >= this.GroupRanks.Owner)
+                perms = Permission.Owner; setP(userId, perms);
 
-            if (plr.GetRankInGroup(this.GroupId) >= this.GroupRanks.Owner)
-                perms = Permission.Owner;
-
-
-            Permissions.Set(userId, perms);
+            if (gRank >= this.GroupRanks.Developer)
+                perms = Permission.Developer; setP(userId, perms);
         });
+        Players.PlayerRemoving.Connect(plr => Permissions.Delete(plr.UserId));
     }
 });
 

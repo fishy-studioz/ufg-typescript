@@ -10,12 +10,12 @@ declare global {
     }
 }
 
-const db = {
+const state = {
     dash: false
 };
 
 const cooldowns = {
-    dash: 1.3
+    dash: 1.4
 };
 
 const anims = ReplicatedStorage.WaitForChild("Assets").WaitForChild("Animations").WaitForChild("Main");
@@ -32,9 +32,10 @@ function getModelMass(model: Model): number {
 const MovementController = Knit.CreateController({
     Name: "MovementController",
 
-    SetMode(movementMode: keyof typeof db): void {
-        if (db[movementMode]) return;
-        db[movementMode] = true;
+    SetMode(movementMode: keyof typeof state): void {
+        if (Player.GetAttribute("Jumping")) return;
+        if (state[movementMode]) return;
+        state[movementMode] = true;
 
         const char = Player.Character ?? Player.CharacterAdded.Wait()[0];
         const hum = WaitFor<Humanoid>(char, "Humanoid");
@@ -45,7 +46,7 @@ const MovementController = Knit.CreateController({
                 const velocity = new Instance("BodyVelocity");
                 velocity.MaxForce = new Vector3(20000, 20000, 20000);
                 velocity.P = 1550;
-                velocity.Velocity = root.CFrame.LookVector.mul(35).sub(new Vector3(0, getModelMass(char) * World.Gravity * .0105, 0));
+                velocity.Velocity = root.CFrame.LookVector.mul(35).sub(new Vector3(0, getModelMass(char) * World.Gravity * .01, 0));
                 velocity.Parent = root;
                 Debris.AddItem(velocity, .35);
                 
@@ -56,10 +57,14 @@ const MovementController = Knit.CreateController({
             default: Logger.UnhandledCase("Attempt to set invalid movement mode: " + movementMode);
         }
 
-        task.delay(cooldowns[movementMode], () => db[movementMode] = false);
+        task.delay(cooldowns[movementMode], () => state[movementMode] = false);
     },
     
     //climb?? glide?
+
+    GetState(): typeof state {
+        return state;
+    },
 
     KnitInit(): void {
         Logger.ComponentActive(script.Name);

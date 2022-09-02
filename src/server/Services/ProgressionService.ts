@@ -25,8 +25,13 @@ const ProgressionService = Knit.CreateService({
         return this.AdventureLevelCalculator(xp);
     },
 
-    AdventureExpCalculator(level: number): number {
-        return math.floor(500 * ((level + 1/2) ** 2 - 1/4));
+    CharEvolutionCalculator(xp: number): number {
+        const charLvl = this.CharLevelCalculator(xp);
+        return math.floor(0);
+    },
+
+    AdventureExpCalculator(adventureLevel: number): number {
+        return math.floor(500 * ((adventureLevel + 1/2) ** 2 - 1/4));
     },
 
     AdventureLevelCalculator(xp: number): number {

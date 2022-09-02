@@ -25,7 +25,7 @@ export default class StrictMap<K, V> {
         if (!value)
             throw Logger.UtilError("StrictMap.Get", `Key "${key}" has no value associated with it.`);
         else
-            return value;
+            return <V>value;
     }
 
     public ForEach(callback: (value: V, key: K) => void): void {
