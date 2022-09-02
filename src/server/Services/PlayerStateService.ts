@@ -1,4 +1,5 @@
 import { KnitServer as Knit } from "@rbxts/knit";
+import { ReplicatedStorage as Replicated } from "@rbxts/services";
 
 declare global {
     interface KnitServices {
@@ -16,7 +17,7 @@ const PlayerStateService = Knit.CreateService({
     },
 
     IsInUI(plr: Player): boolean {
-        return false;
+        return <boolean>Replicated.Network.PlayerIsInUI.InvokeClient(plr);
     }
 });
 

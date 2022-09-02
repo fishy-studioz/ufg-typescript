@@ -12,7 +12,7 @@ declare global {
     }
 }
 let mode = CameraMode.Unlocked;
-const { CameraType: camType, EasingStyle: style, EasingDirection: direction } = Enum;
+const { EasingStyle: style, EasingDirection: direction } = Enum;
 const CameraController = Knit.CreateController({
     Name: "CameraController",
     Cam: World.CurrentCamera!,
