@@ -1,6 +1,6 @@
 /node_modules
-/out
-/include
+# /out
+# /include
 *.tsbuildinfo
 /.eslintrc
 /.vscode
