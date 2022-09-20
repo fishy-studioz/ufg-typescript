@@ -26,6 +26,9 @@ export const DefaultData = {
             PBR: true,
             BulletImpacts: true,
             PostProcessing: true,
+            MotionBlur: true,
+            Brightness: 100,
+            FOV: 70,
         },
     },
 };

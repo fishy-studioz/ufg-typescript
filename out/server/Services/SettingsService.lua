@@ -15,6 +15,9 @@ local SettingsService = Knit.CreateService({
 		SetVolume = function(self, player, volumeType, value)
 			self.Server:SetVolume(player, volumeType, value)
 		end,
+		Set = function(self, player, settings)
+			self.Server:Set(player, settings)
+		end,
 	},
 	Get = function(self, player)
 		local data = Knit.GetService("DataService")
@@ -29,6 +32,11 @@ local SettingsService = Knit.CreateService({
 		local data = Knit.GetService("DataService")
 		local profile = data:GetProfile(player)
 		profile.Data.Settings.Volume[volumeType] = value
+	end,
+	Set = function(self, player, settings)
+		local data = Knit.GetService("DataService")
+		local profile = data:GetProfile(player)
+		profile.Data.Settings = settings
 	end,
 	KnitInit = function(self)
 		Logger:ComponentActive(script.Name)

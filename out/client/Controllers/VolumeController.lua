@@ -10,7 +10,6 @@ local Logger = TS.import(script, game:GetService("ReplicatedStorage"), "TypeScri
 local VolumeController = Knit.CreateController({
 	Name = "VolumeController",
 	UpdateSounds = function(self, settings)
-		print(settings, settings.Volume.Master)
 		local function setVolume(sound)
 			local _result = sound
 			if _result ~= nil then

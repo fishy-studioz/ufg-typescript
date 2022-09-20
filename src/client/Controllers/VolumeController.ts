@@ -14,7 +14,6 @@ const VolumeController = Knit.CreateController({
     Name: "VolumeController",
 
     UpdateSounds(settings: typeof DefaultData.Settings): void {
-        print(settings, settings.Volume.Master);
         function setVolume(sound: Instance): void {
             if (sound?.IsA("Sound")) {
                 if (sound.GetAttribute("Effects"))
@@ -41,7 +40,7 @@ const VolumeController = Knit.CreateController({
         
         const settings = Knit.GetService("SettingsService");
         settings.Updated.Connect(opts => this.UpdateSounds(opts));
-    },
+    }
 });
 
 export = VolumeController;
