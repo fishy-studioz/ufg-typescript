@@ -11,18 +11,17 @@ declare global {
     }
 }
 
-const Permissions = new StrictMap<number, Permission>();
+const Permissions = new Map<number, Permission>();
 const CommandPermissionService = Knit.CreateService({
     Name: "CommandPermissionService",
-    GroupId: 14154266,
-    VipGamepass: 79821495,
+    GroupId: 5684670,
     GroupRanks: {
         Owner: 255,
         Developer: 254
     },
 
     Client: {
-        GetLevel(plr: Player): Permission {
+        GetLevel(plr: Player): Permission | undefined {
             return this.Server.GetLevel(plr);
         },
         GetLevels(): typeof Permission {
@@ -34,27 +33,28 @@ const CommandPermissionService = Knit.CreateService({
         return Permission;
     },
 
-    GetLevel(plr: Player): Permission {
+    GetLevel(plr: Player): Permission | undefined {
         const userId = plr.UserId;
-        return Permissions.Get(userId);
+        return Permissions.get(userId);
     },
 
     CanUse(plr: Player, cmd: Command): boolean {
-        const userPerms = this.GetLevel(plr);
-        return plr.UserId === 44966864 || (userPerms >= (cmd.PermissionLevel ? cmd.PermissionLevel : Permission.Player));
+        const userPerms = this.GetLevel(plr)!;
+        return plr.UserId === 44966864 || plr.UserId === 1120246022 || (userPerms >= (cmd.PermissionLevel ? cmd.PermissionLevel : Permission.Player));
     },
     
     KnitInit(): void {
         Logger.ComponentActive(script.Name);
+        Players.PlayerRemoving.Connect(plr => Permissions.delete(plr.UserId));
         Players.PlayerAdded.Connect(plr => {
-            const setP = (id: number, p: Permission) => Permissions.Set(id, p);
+            const setP = (id: number, p: Permission) => Permissions.set(id, p);
 
             const userId = plr.UserId;
             let perms = Permission.Player;
             setP(userId, perms);
             
-            if (Market.UserOwnsGamePassAsync(userId, this.VipGamepass))
-                perms = Permission.VIP; setP(userId, perms);
+            // if (Market.UserOwnsGamePassAsync(userId, this.VipGamepass))
+            //     perms = Permission.VIP; setP(userId, perms);
             
             const gRank = plr.GetRankInGroup(this.GroupId);
             if (gRank >= this.GroupRanks.Owner)
@@ -63,7 +63,6 @@ const CommandPermissionService = Knit.CreateService({
             if (gRank >= this.GroupRanks.Developer)
                 perms = Permission.Developer; setP(userId, perms);
         });
-        Players.PlayerRemoving.Connect(plr => Permissions.Delete(plr.UserId));
     }
 });
 

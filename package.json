@@ -22,6 +22,7 @@
   "dependencies": {
     "@rbxts/datastore2": "^1.4.0-ts.0",
     "@rbxts/knit": "^0.0.21-alpha.0",
+    "@rbxts/profileservice": "^1.4.1",
     "@rbxts/services": "^1.2.1",
     "@rbxts/string-utils": "^1.0.3"
   }

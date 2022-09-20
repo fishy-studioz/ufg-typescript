@@ -1,6 +1,8 @@
-import { KnitServer as Knit, RemoteSignal, Signal } from "@rbxts/knit";
-import { RunService } from "@rbxts/services";
-import DataStore2 from "@rbxts/datastore2";
+import { KnitServer as Knit } from "@rbxts/knit";
+import { Players } from "@rbxts/services";
+import { Profile } from "@rbxts/profileservice/globals";
+import { DefaultData } from "shared/Classes/DefaultData";
+import ProfileService from "@rbxts/profileservice";
 import Logger from "shared/Logger";
 
 declare global {
@@ -9,60 +11,48 @@ declare global {
     }
 }
 
-const keys = ["characterSetups", "partySetup", "location", "adventureXP", "equippedCharacter", "nickname", "newPlayer"];
+type DataType = typeof DefaultData;
+const profiles = new Map<Player, Profile<DataType> | undefined>();
 const DataService = Knit.CreateService({
     Name: "DataService",
+    Profiles: profiles,
+    PlayerDataStore: ProfileService.GetProfileStore("PlayerData", DefaultData),
 
-    DataUpdated: new Signal<(plr: Player, name: string, value: defined) => void>(),
-    Client: {
-        DataUpdated: new RemoteSignal<(name: string, value: defined) => void>(),
-        Get<T = defined>(plr: Player, name: string, defaultValue?: T): T {
-            return this.Server.Get(plr, name, defaultValue);
-        },
-        Set<T = unknown>(plr: Player, name: string, value: T): void {
-            this.Server.Set(plr, name, value);
-        },
-        GetKeys(): string[] {
-            return keys;
-        }
+    GetProfile(player: Player): Profile<DataType> | undefined {
+        return this.Profiles.get(player);
     },
 
-    KnitInit() {
-        Logger.ComponentActive(this.Name);
-        DataStore2.Combine("DATA", ...keys);
-    },
+    KnitStart(): void {
+        Logger.ComponentActive("DataService");
+        const settings = Knit.GetService("SettingsService");
+        const playerAdded = (player: Player) => {
+            const playerData = this.PlayerDataStore.LoadProfileAsync("Player_" + player.UserId);
+            if (playerData !== undefined) {
+                playerData.AddUserId(player.UserId); // GDPR compliance
+                playerData.Reconcile(); // Fill in missing variables from ProfileTemplate (optional)
+                playerData.ListenToRelease(() => {
+                    this.Profiles.set(player, undefined);
+                    // The profile could've been loaded on another Roblox server.
+                    player.Kick();
+                });
+                if (player.IsDescendantOf(Players)) {
+                    this.Profiles.set(player, playerData);
+                    settings.Client.Updated.Fire(player, playerData.Data.Settings);
+                    player.SetAttribute("CareerKills", playerData.Data.CareerKills);
+                    player.SetAttribute("Tritocoins", playerData.Data.Tritocoins);
+                } else
+                    playerData.Release();
+            } else
+                player.Kick();
+        };
 
-    GetRawStore<V = unknown>(plr: Player, name: string): DataStore2<V> {
-        return DataStore2<V>(name, plr);
-    },
+        for (const player of Players.GetPlayers())
+            task.spawn(playerAdded, player);
 
-    Get<V = defined>(plr: Player, name: string, defaultValue?: V): V {
-        const store = this.GetRawStore<V>(plr, name);
-        return store.Get(defaultValue) as V;
+        //listen for data update and make sure settingsservice knows
+        Players.PlayerAdded.Connect(playerAdded);
+        Players.PlayerRemoving.Connect(player => this.GetProfile(player)?.Release());
     },
-
-    Set<V = unknown>(plr: Player, name: string, value: V): void {
-        const store = this.GetRawStore<V>(plr, name);
-        store.Set(value);
-    },
-
-    Increment(plr: Player, name: string, amount: number): void {
-        const value = this.Get<number>(plr, name);
-        this.Set(plr, name, value + amount);
-    },
-
-    Store<V extends defined = defined>(plr: Player, name: string, defaultValue: V): DataStore2<V> {
-        const store = DataStore2<V>(name, plr);
-        const remote = this.Client.DataUpdated;
-        const signal = this.DataUpdated
-        const callRemote = (value: V) => {
-            remote.Fire(plr, name, value);
-            signal.Fire(plr, name, value);
-        }
-        store.OnUpdate(callRemote);
-        callRemote(store.Get(defaultValue));
-        return store;
-    }
 });
 
 export = DataService;

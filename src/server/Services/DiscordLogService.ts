@@ -1,5 +1,5 @@
 import { KnitServer as Knit } from "@rbxts/knit";
-import { HttpService as HTTP, RunService as Runtime } from "@rbxts/services";
+import { HttpService as HTTP, MarketplaceService as Market } from "@rbxts/services";
 import Logger from "shared/Logger";
 
 declare global {
@@ -10,7 +10,7 @@ declare global {
 
 const DiscordLogService = Knit.CreateService({
     Name: "DiscordLogService",
-    WebhookURL: "https://discord.com/api/webhooks/1012690289984540743/5bJCjlw5ZOi7CHRBC9nrmHsy6vRJwIuZUCWskHYpt779gvm-ASx1wPkDXvZcI32fc0Zt",
+    WebhookURL: "https://discord.com/api/webhooks/1018775238265294909/rQl8twqI8mb3S6c6qqlzZ1rL7A-rvIi7Gu484Fd1I-B34M1G66brf8vdaYJYi2b-S6Nv",
     ApiURL: "https://bloxrank.net/api/webhook/",
 
     Client: {
@@ -24,7 +24,7 @@ const DiscordLogService = Knit.CreateService({
         const data = HTTP.JSONEncode({
             WebhookURL: this.WebhookURL,
             WebhookData: {
-                username: "Untitled RPG Game Logger",
+                username: "UFG Logger",
                 embeds: [
                     {
                         title: logType,
@@ -32,6 +32,9 @@ const DiscordLogService = Knit.CreateService({
                             name: player.Name,
                             //icon_url: thumb,
                             url: "https://www.roblox.com/users/" + player.UserId + "/profile"
+                        },
+                        thumbnail: {
+                            url: "https://tr.rbxcdn.com/e050e25b323f297edd69ca76cd0fe5f1/150/150/Image/Png"
                         },
                         description: message,
                         timestamp: DateTime.now().ToIsoDate(),

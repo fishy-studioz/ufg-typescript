@@ -1,9 +1,10 @@
 import { KnitServer as Knit } from "@rbxts/knit";
 import { MessagingService as Messaging, Players, ReplicatedFirst, ReplicatedStorage, RunService as Runtime } from "@rbxts/services";
+import { Permission } from "../Classes/Permission";
 import { Command } from "../Classes/Command";
-import Logger from "shared/Logger";
+import BanService from "@rbxts/ban-service";
 import WaitFor from "shared/Util/WaitFor";
-import { Permission } from "server/Classes/Permission";
+import Logger from "shared/Logger";
 
 declare global {
     interface KnitServices {
@@ -11,13 +12,20 @@ declare global {
     }
 }
 
-const net = WaitFor<Folder>(ReplicatedStorage, "Network")
-const sendConsoleMsg = WaitFor<RemoteEvent>(net, "SendConsoleMsg");
+const sendConsoleMsg = WaitFor<RemoteEvent>(ReplicatedStorage, "SendConsoleMsg");
 const reply = (plr: Player, msg: string) => sendConsoleMsg.FireClient(plr, msg);
-// const data = Knit.GetService("DataService");
+let discord: typeof Knit.Services.DiscordLogService;
 const CommandService = Knit.CreateService({
     Name: "CommandService",
     Commands: new Map<string, Command>([
+        [
+            "ping", 
+            new Command("ping", 
+                Permission.Player,
+                ["pingcheck", "pong"], 
+                (plr) => reply(plr, "Pong!")
+            )
+        ],
         [
             "version", 
             new Command("version", 
@@ -26,6 +34,44 @@ const CommandService = Knit.CreateService({
                 (plr) => {
                     const version = WaitFor<StringValue>(ReplicatedFirst, "GameVersion")
                     reply(plr, version.Value);
+                }
+            )
+        ],
+        [
+            "kick", 
+            new Command("kick", 
+                Permission.Developer,
+                ["kickout", "remove", "bye"], 
+                (plr, args) => {
+                    const target = args[0] ?? "";
+                    args.shift();
+                    let reason = args.join(" ");
+                    reason = args.size() === 0 ? `You have been kicked by ${plr.Name}.` : reason;
+                    const targetPlayer = <Player>Players.FindFirstChild(target);
+                    if (!targetPlayer) return reply(plr, "Provided no target to kick.");
+
+                    targetPlayer.Kick(reason);
+                    reply(plr, `Successfully kicked ${targetPlayer.Name}.`);
+                    discord.Log(plr, `${targetPlayer.Name} was kicked for ${reason}.`, "Moderation");
+                }
+            )
+        ],
+        [
+            "ban", 
+            new Command("ban", 
+                Permission.Developer,
+                ["banish", "pban", "permban"], 
+                (plr, args) => {
+                    const target = args[0] ?? "";
+                    args.shift();
+                    let reason = args.join(" ");
+                    reason = args.size() === 0 ? `You have been banned by ${plr.Name}.` : reason;
+                    const targetPlayer = <Player>Players.FindFirstChild(target);
+                    if (!targetPlayer) return reply(plr, "Provided no target to ban.");
+
+                    BanService.Ban(targetPlayer, reason);
+                    reply(plr, `Successfully banned ${targetPlayer.Name}.`);
+                    discord.Log(plr, `${targetPlayer.Name} was banned for ${reason}.`, "Moderation");
                 }
             )
         ],
@@ -49,7 +95,7 @@ const CommandService = Knit.CreateService({
     
     KnitStart(): void {
         Logger.ComponentActive(script.Name);
-        const discord = Knit.GetService("DiscordLogService");
+        discord = Knit.GetService("DiscordLogService");
         const cmdPerms = Knit.GetService("CommandPermissionService");
         const prefix = ".";
         Players.PlayerAdded.Connect(plr =>
