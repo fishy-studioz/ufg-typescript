@@ -27,7 +27,6 @@ local GraphicsController = Knit.CreateController({
 				return settingsData.Graphics[toggleableSetting]
 			else
 				warn("attempt to toggle graphics setting that isnt a boolean")
-				return nil
 			end
 		end
 	end,

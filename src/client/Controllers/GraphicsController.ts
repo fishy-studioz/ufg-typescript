@@ -34,7 +34,6 @@ const GraphicsController = Knit.CreateController({
                 return <boolean>settingsData.Graphics[toggleableSetting];
             } else {
                 warn("attempt to toggle graphics setting that isnt a boolean");
-                return;
             }
         }
     },

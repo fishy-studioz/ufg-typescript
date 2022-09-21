@@ -35,6 +35,15 @@ const VolumeController = Knit.CreateController({
             setVolume(instance);
     },
 
+    Set(volumeType: "Master" | "Effects" | "Music", value: number): void {
+        const settings = Knit.GetService("SettingsService");
+        const settingsData = settings.Get();
+        if (settingsData) {
+            settingsData.Volume[volumeType] = value;
+            settings.Set(settingsData);
+        }
+    },
+
     KnitStart(): void {
         Logger.ComponentActive(script.Name);
         

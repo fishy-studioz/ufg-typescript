@@ -40,6 +40,14 @@ local VolumeController = Knit.CreateController({
 			setVolume(instance)
 		end
 	end,
+	Set = function(self, volumeType, value)
+		local settings = Knit.GetService("SettingsService")
+		local settingsData = settings:Get()
+		if settingsData then
+			settingsData.Volume[volumeType] = value
+			settings:Set(settingsData)
+		end
+	end,
 	KnitStart = function(self)
 		Logger:ComponentActive(script.Name)
 		local settings = Knit.GetService("SettingsService")

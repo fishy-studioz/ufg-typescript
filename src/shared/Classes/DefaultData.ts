@@ -19,6 +19,7 @@ export const DefaultData = {
                 Interact: "E",
                 Taunt: "G",
                 Jump: "Space",
+                Sprint: "LeftShift"
             },
         },
         Graphics: {
