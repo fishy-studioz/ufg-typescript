@@ -24,6 +24,7 @@
     "@rbxts/knit": "^0.0.21-alpha.0",
     "@rbxts/profileservice": "^1.4.1",
     "@rbxts/services": "^1.2.1",
-    "@rbxts/string-utils": "^1.0.3"
+    "@rbxts/string-utils": "^1.0.3",
+    "robloxts-banservice": "^1.1.0"
   }
 }

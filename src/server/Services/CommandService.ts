@@ -2,7 +2,7 @@ import { KnitServer as Knit } from "@rbxts/knit";
 import { MessagingService as Messaging, Players, ReplicatedFirst, ReplicatedStorage, RunService as Runtime } from "@rbxts/services";
 import { Permission } from "../Classes/Permission";
 import { Command } from "../Classes/Command";
-import BanService from "@rbxts/ban-service";
+import BanService from "robloxts-banservice";
 import WaitFor from "shared/Util/WaitFor";
 import Logger from "shared/Logger";
 
