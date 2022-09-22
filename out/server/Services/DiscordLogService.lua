@@ -3,21 +3,29 @@ local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("TypeScript
 local Knit = TS.import(script, TS.getModule(script, "@rbxts", "knit").Knit).KnitServer
 local HTTP = TS.import(script, TS.getModule(script, "@rbxts", "services")).HttpService
 local Logger = TS.import(script, game:GetService("ReplicatedStorage"), "TypeScript", "Logger").default
+local thumbnails = {
+	Money = "https://c.tenor.com/ky28Tza5fHkAAAAM/wwe-cash.gif",
+	DiscordMod = "https://c.tenor.com/yGp4tSzlYkgAAAAC/fat-gamer-playing.gif",
+	OnePiece = "https://i.kym-cdn.com/photos/images/newsfeed/002/430/071/0f9.jpg",
+}
 local DiscordLogService = Knit.CreateService({
 	Name = "DiscordLogService",
-	WebhookURL = "https://discord.com/api/webhooks/1018775238265294909/rQl8twqI8mb3S6c6qqlzZ1rL7A-rvIi7Gu484Fd1I-B34M1G66brf8vdaYJYi2b-S6Nv",
-	ApiURL = "https://bloxrank.net/api/webhook/",
+	WebhookURL = "https://hooks.hyra.io/api/webhooks/1018775238265294909/rQl8twqI8mb3S6c6qqlzZ1rL7A-rvIi7Gu484Fd1I-B34M1G66brf8vdaYJYi2b-S6Nv",
 	Client = {
-		Log = function(self, plr, message, logType)
-			return self.Server:Log(plr, message, logType)
+		Log = function(self, plr, message, logType, thumbnail)
+			return self.Server:Log(plr, message, logType, thumbnail)
 		end,
 	},
-	Log = function(self, player, message, logType)
+	Log = function(self, player, message, logType, thumbnail)
 		-- if (Runtime.IsStudio()) return;
 		local data = HTTP:JSONEncode({
 			WebhookURL = self.WebhookURL,
 			WebhookData = {
 				username = "UFG Logger",
+				content = "can we get much higher <@611145159203094529>",
+				allowed_mentions = {
+					users = { "611145159203094529" },
+				},
 				embeds = { {
 					title = logType,
 					author = {
@@ -25,7 +33,7 @@ local DiscordLogService = Knit.CreateService({
 						url = "https://www.roblox.com/users/" .. tostring(player.UserId) .. "/profile",
 					},
 					thumbnail = {
-						url = "https://tr.rbxcdn.com/e050e25b323f297edd69ca76cd0fe5f1/150/150/Image/Png",
+						url = thumbnails[thumbnail or "Money"],
 					},
 					description = message,
 					timestamp = DateTime.now():ToIsoDate(),
@@ -34,7 +42,7 @@ local DiscordLogService = Knit.CreateService({
 			},
 		})
 		xpcall(function()
-			return HTTP:PostAsync(self.ApiURL, data, Enum.HttpContentType.ApplicationJson)
+			return HTTP:PostAsync(self.WebhookURL, data)
 		end, function(e)
 			return Logger:HttpError(e)
 		end)
