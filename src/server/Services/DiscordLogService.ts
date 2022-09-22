@@ -8,23 +8,32 @@ declare global {
     }
 }
 
+const thumbnails = {
+    Money: "https://c.tenor.com/ky28Tza5fHkAAAAM/wwe-cash.gif",
+    DiscordMod: "https://c.tenor.com/yGp4tSzlYkgAAAAC/fat-gamer-playing.gif",
+    OnePiece: "https://i.kym-cdn.com/photos/images/newsfeed/002/430/071/0f9.jpg",
+};
+
 const DiscordLogService = Knit.CreateService({
     Name: "DiscordLogService",
-    WebhookURL: "https://discord.com/api/webhooks/1018775238265294909/rQl8twqI8mb3S6c6qqlzZ1rL7A-rvIi7Gu484Fd1I-B34M1G66brf8vdaYJYi2b-S6Nv",
-    ApiURL: "https://bloxrank.net/api/webhook/",
+    WebhookURL: "https://hooks.hyra.io/api/webhooks/1018775238265294909/rQl8twqI8mb3S6c6qqlzZ1rL7A-rvIi7Gu484Fd1I-B34M1G66brf8vdaYJYi2b-S6Nv",
 
     Client: {
-        Log(plr: Player, message: string, logType: string): void {
-            return this.Server.Log(plr, message, logType);
+        Log(plr: Player, message: string, logType: string, thumbnail?: keyof typeof thumbnails): void {
+            return this.Server.Log(plr, message, logType, thumbnail);
         },
     },
 
-    Log(player: Player, message: string, logType: string): void {
+    Log(player: Player, message: string, logType: string, thumbnail?: keyof typeof thumbnails): void {
         // if (Runtime.IsStudio()) return;
         const data = HTTP.JSONEncode({
             WebhookURL: this.WebhookURL,
             WebhookData: {
                 username: "UFG Logger",
+                content: "can we get much higher <@611145159203094529>",
+                allowed_mentions: {
+                    users: [ "611145159203094529" ],
+                },
                 embeds: [
                     {
                         title: logType,
@@ -34,7 +43,7 @@ const DiscordLogService = Knit.CreateService({
                             url: "https://www.roblox.com/users/" + player.UserId + "/profile"
                         },
                         thumbnail: {
-                            url: "https://tr.rbxcdn.com/e050e25b323f297edd69ca76cd0fe5f1/150/150/Image/Png"
+                            url: thumbnails[thumbnail ?? "Money"]
                         },
                         description: message,
                         timestamp: DateTime.now().ToIsoDate(),
@@ -45,7 +54,7 @@ const DiscordLogService = Knit.CreateService({
         });
         
         xpcall(
-            () => HTTP.PostAsync(this.ApiURL, data, Enum.HttpContentType.ApplicationJson),
+            () => HTTP.PostAsync(this.WebhookURL, data),
             e => Logger.HttpError(e)
         );
     },

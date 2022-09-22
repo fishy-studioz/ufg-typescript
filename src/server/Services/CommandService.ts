@@ -76,6 +76,20 @@ const CommandService = Knit.CreateService({
             )
         ],
         [
+            "unban", 
+            new Command("unban", 
+                Permission.Developer,
+                ["unbanish", "unpban", "unpermban"], 
+                (plr, [ targetId ]) => { //userid
+                    if (!targetId || !tonumber(targetId)) return reply(plr, "Provided no target to unban.");
+
+                    BanService.Unban(tonumber(targetId)!);
+                    reply(plr, `Successfully unbanned ${targetId}.`);
+                    discord.Log(plr, `${targetId} was unbanned.`, "Moderation");
+                }
+            )
+        ],
+        [
             "notify",
             new Command("notify", 
                 Permission.Developer,
@@ -84,10 +98,7 @@ const CommandService = Knit.CreateService({
                     const msg = args.join(" ");
                     if (!msg || msg === "") return reply(plr, "Please input a valid message to broadcast.");
                     const [ success, err ] = pcall(() => Messaging.PublishAsync("DevNotify", msg));
-                    if (success)
-                        reply(plr, "Successfully sent notification.");
-                    else
-                        reply(plr, "Failed to send notification: " + tostring(err));
+                    reply(plr, success ? "Successfully sent notification." : "Failed to send notification: " + tostring(err));
                 }
             )
         ]
