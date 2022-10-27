@@ -2,7 +2,7 @@ export const DefaultData = {
     CareerKills: 0,
     Tritocoins: 0,
     Settings: {
-        Volume: {
+        Audio: {
             Master: 100,
             Effects: 100,
             Music: 100,

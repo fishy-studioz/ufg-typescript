@@ -17,11 +17,11 @@ const VolumeController = Knit.CreateController({
         function setVolume(sound: Instance): void {
             if (sound?.IsA("Sound")) {
                 if (sound.GetAttribute("Effects"))
-                    sound.Volume *= (settings.Volume.Effects / 100) + .5;
+                    sound.Volume *= (settings.Audio.Effects / 100) + .5;
                 if (sound.GetAttribute("Music"))
-                    sound.Volume *= (settings.Volume.Music / 100) + .5;
+                    sound.Volume *= (settings.Audio.Music / 100) + .5;
                 
-                sound.Volume *= (settings.Volume.Master / 100) + .5;
+                sound.Volume *= (settings.Audio.Master / 100) + .5;
             }
         }
 
@@ -39,7 +39,7 @@ const VolumeController = Knit.CreateController({
         const settings = Knit.GetService("SettingsService");
         const settingsData = settings.Get();
         if (settingsData) {
-            settingsData.Volume[volumeType] = value;
+            settingsData.Audio[volumeType] = value;
             settings.Set(settingsData);
         }
     },

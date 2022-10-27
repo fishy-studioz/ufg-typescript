@@ -18,13 +18,13 @@ local VolumeController = Knit.CreateController({
 			if _result then
 				local _value = sound:GetAttribute("Effects")
 				if _value ~= 0 and (_value == _value and (_value ~= "" and _value)) then
-					sound.Volume *= (settings.Volume.Effects / 100) + .5
+					sound.Volume *= (settings.Audio.Effects / 100) + .5
 				end
 				local _value_1 = sound:GetAttribute("Music")
 				if _value_1 ~= 0 and (_value_1 == _value_1 and (_value_1 ~= "" and _value_1)) then
-					sound.Volume *= (settings.Volume.Music / 100) + .5
+					sound.Volume *= (settings.Audio.Music / 100) + .5
 				end
-				sound.Volume *= (settings.Volume.Master / 100) + .5
+				sound.Volume *= (settings.Audio.Master / 100) + .5
 			end
 		end
 		for _, instance in ipairs(ReplicatedFirst:GetDescendants()) do
@@ -44,7 +44,7 @@ local VolumeController = Knit.CreateController({
 		local settings = Knit.GetService("SettingsService")
 		local settingsData = settings:Get()
 		if settingsData then
-			settingsData.Volume[volumeType] = value
+			settingsData.Audio[volumeType] = value
 			settings:Set(settingsData)
 		end
 	end,

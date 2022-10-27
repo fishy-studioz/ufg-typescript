@@ -3,7 +3,6 @@ local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("TypeScript
 local _knit = TS.import(script, TS.getModule(script, "@rbxts", "knit").Knit)
 local Knit = _knit.KnitServer
 local RemoteSignal = _knit.RemoteSignal
-local Players = TS.import(script, TS.getModule(script, "@rbxts", "services")).Players
 local Logger = TS.import(script, game:GetService("ReplicatedStorage"), "TypeScript", "Logger").default
 local SettingsService = Knit.CreateService({
 	Name = "SettingsService",
@@ -14,6 +13,9 @@ local SettingsService = Knit.CreateService({
 		end,
 		Set = function(self, player, settings)
 			self.Server:Set(player, settings)
+		end,
+		Update = function(self, player)
+			self.Server:Update(player)
 		end,
 	},
 	Get = function(self, player)
@@ -30,11 +32,12 @@ local SettingsService = Knit.CreateService({
 		local profile = data:GetProfile(player)
 		profile.Data.Settings = settings
 	end,
+	Update = function(self, player)
+		local data = self:Get(player)
+		self.Client.Updated:Fire(player, data)
+	end,
 	KnitInit = function(self)
 		Logger:ComponentActive(script.Name)
-		Players.PlayerAdded:Connect(function(plr)
-			return self.Client.Updated:Fire(plr, self:Get(plr))
-		end)
 	end,
 })
 return SettingsService

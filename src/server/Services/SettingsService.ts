@@ -19,6 +19,9 @@ const SettingsService = Knit.CreateService({
         },
         Set(player: Player, settings: typeof DefaultData.Settings): void {
             this.Server.Set(player, settings);
+        },
+        Update(player: Player): void {
+            this.Server.Update(player);
         }
     },
 
@@ -34,9 +37,13 @@ const SettingsService = Knit.CreateService({
         profile!.Data.Settings = settings;
     },
 
+    Update(player: Player): void {
+        const data = this.Get(player)!;
+        this.Client.Updated.Fire(player, data);
+    },
+
     KnitInit(): void {
         Logger.ComponentActive(script.Name)
-        Players.PlayerAdded.Connect(plr => this.Client.Updated.Fire(plr, this.Get(plr)!));
     }
 });
 
